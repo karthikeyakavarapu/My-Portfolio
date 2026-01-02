@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fit-Fusion - All-in-One</title>
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <style>
+    body {
+      background: #121212;
+      color: #e0e0e0;
+      min-height: 100vh;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .navbar-gradient {
+      background: #000;
+      border-bottom: 2px solid #fd746c;
+    }
+    .section {
+      display: none;
+    }
+    .active-section {
+      display: block;
+    }
+    .nav-link.active {
+      font-weight: bold;
+      color: #fff !important;
+      background: #fd746c;
+      border-radius: 10px;
+    }
+    .feature-hover {
+      position: relative;
+      cursor: pointer;
+      transition: box-shadow 0.2s, background 0.2s;
+      box-shadow: 0 2px 4px rgba(255 255 255 / 0.1);
+    }
+    .feature-hover:hover {
+      box-shadow: 0 8px 20px rgba(255 255 255 / 0.2);
+      background: #333;
+      color: #fd746c;
+    }
+    .feature-hover .feature-tooltip {
+      visibility: hidden;
+      width: 230px;
+      background: #222;
+      color: #fd746c;
+      border-radius: 8px;
+      padding: 10px;
+      position: absolute;
+      z-index: 10;
+      bottom: 105%;
+      left: 50%;
+      margin-left: -115px;
+      box-shadow: 0 2px 8px rgba(253 116 108 / 0.3);
+      opacity: 0;
+      transition: opacity 0.25s, visibility 0.25s;
+      font-size: 0.9rem;
+    }
+    .feature-hover:hover .feature-tooltip {
+      visibility: visible;
+      opacity: 1;
+    }
+    .card-custom {
+      background: #1e1e1e;
+      border-radius: 20px;
+      box-shadow: 0 4px 16px 0 rgba(253 116 108 / 0.12);
+      border: 1px solid #333;
+      color: #e0e0e0;
+    }
+    .recipe-idea,
+    .workout-plan,
+    .intake-plan {
+      position: relative;
+      margin-bottom: 1rem;
+      cursor: pointer;
+      padding: 14px 20px;
+      border-radius: 16px;
+      background: linear-gradient(
+        120deg,
+        #1e1e1e 45%,
+        #2a2a2a 100%
+      );
+      transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+      box-shadow: 0 2px 8px rgba(253 116 108 / 0.1);
+      color: #ddd;
+      font-weight: 500;
+    }
+    .recipe-idea:hover,
+    .workout-plan:hover,
+    .intake-plan:hover {
+      z-index: 2;
+      transform: scale(1.04);
+      box-shadow: 0 6px 22px 0 rgba(253 116 108 / 0.4);
+      background: #111;
+      color: #fd746c;
+    }
+    .tooltip-inner-div {
+      visibility: hidden;
+      opacity: 0;
+      text-align: left;
+      max-width: 350px;
+      background: #151515;
+      padding: 15px;
+      border-radius: 10px;
+      position: absolute;
+      top: 110%;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      box-shadow: 0 4px 16px 0 rgba(253 116 108 / 0.3);
+      color: #fd746c;
+      font-weight: 400;
+      font-size: 0.9rem;
+      transition: opacity 0.25s, visibility 0.25s;
+      line-height: 1.3;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .recipe-idea:hover .tooltip-inner-div,
+    .workout-plan:hover .tooltip-inner-div,
+    .intake-plan:hover .tooltip-inner-div {
+      visibility: visible;
+      opacity: 1;
+    }
+    .cta-btn {
+      background: linear-gradient(90deg, #fd746c 0%, #ff5e62 100%);
+      color: white;
+      border: none;
+      font-weight: bold;
+      padding: 10px 28px;
+      border-radius: 24px;
+      transition: background 0.3s, box-shadow 0.3s;
+      box-shadow: 0 4px 12px rgba(253 116 108 / 0.4);
+      font-size: 1.05rem;
+      user-select: none;
+    }
+    .cta-btn:hover,
+    .cta-btn:focus {
+      background: linear-gradient(90deg, #ff9068 0%, #fd746c 100%);
+      color: #fff;
+      box-shadow: 0 6px 18px rgba(253 116 108 / 0.7);
+      outline: none;
+    }
+    .small-text {
+      font-size: 0.9rem;
+      color: #999;
+    }
+    .FitFusion-highlight {
+      color: #fd746c;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+    }
+    /* Scrollable food summary */
+    #food-list {
+      max-height: 250px;
+      overflow-y: auto;
+    }
+    /* Scrollbar styling */
+    #food-list::-webkit-scrollbar {
+      width: 8px;
+    }
+    #food-list::-webkit-scrollbar-track {
+      background: #222;
+      border-radius: 8px;
+    }
+    #food-list::-webkit-scrollbar-thumb {
+      background: #fd746c;
+      border-radius: 8px;
+    }
+    /* Badge style tweaks */
+    .badge.bg-secondary {
+      background-color: #333 !important;
+      color: #fd746c;
+      font-weight: 600;
+      cursor: default;
+      user-select: none;
+    }
+    /* Minor correction for repeated titles in home */
+    #home h1 {
+      margin-bottom: 1rem;
+    }
+    /* Designer Credits Footer */
+    #designer-credits {
+      font-size: 0.85rem;
+      color: #777;
+      margin-top: 3rem;
+      text-align: center;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      user-select: none;
+    }
+    #designer-credits span {
+      color: #fd746c;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark navbar-gradient" aria-label="Main navigation">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#" onclick="switchSection('home')">FitFusion</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarMain"
+        title="Toggle navigation"
+        aria-controls="navbarMain"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarMain">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="#" onclick="switchSection('home')">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" onclick="switchSection('food')">Food Intake</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" onclick="switchSection('recipes')">Recipes</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" onclick="switchSection('workouts')">Workouts</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Home Section -->
+  <div class="container py-5 section active-section" id="home" tabindex="0">
+    <h1 class="mb-3">
+      Welcome to <span class="FitFusion-highlight">Fit-Fusion</span>
+    </h1>
+    <p>
+      Your <strong>all-in-one health companion</strong> to help you:
+      <span class="feature-hover ms-2" tabindex="0" aria-describedby="tooltip-trackmeals">
+        <span class="fw-bold">Track Meals</span>
+        <span id="tooltip-trackmeals" class="feature-tooltip" role="tooltip"
+          >Get instant nutrition feedback on what you eat.</span>
+        >
+      </span>,
+      <span class="feature-hover ms-2" tabindex="0" aria-describedby="tooltip-explore">
+        <span class="fw-bold">Explore Recipes</span>
+        <span id="tooltip-explore" class="feature-tooltip" role="tooltip"
+          >Discover delicious, healthy recipes customized to your goals.</span>
+        >
+      </span>,
+      and
+      <span class="feature-hover ms-2" tabindex="0" aria-describedby="tooltip-workout">
+        <span class="fw-bold">Join Workout Plans</span>
+        <span id="tooltip-workout" class="feature-tooltip" role="tooltip"
+          >Beginner to advanced routines to strengthen and energize your body.</span>
+        >
+      </span>.
+    </p>
+
+    <div class="row mt-4">
+      <div class="col-md-4 feature-hover text-center py-4" tabindex="0">
+        <svg width="48" height="48" fill="#fd746c" viewBox="0 0 16 16" aria-hidden="true">
+          <path
+            d="M8 3a3 3 0 00-3 3v2h6V6a3 3 0 00-3-3zM6 6V6a2 2 0 114 0V6"
+          ></path>
+          <circle cx="8" cy="10.5" r="3"></circle>
+        </svg>
+        <div class="fw-bold mt-2">Food Tracker</div>
+        <span class="feature-tooltip">Log food & track calories/protein live.</span>
+      </div>
+      <div class="col-md-4 feature-hover text-center py-4" tabindex="0">
+        <svg width="48" height="48" fill="#fd746c" viewBox="0 0 16 16" aria-hidden="true">
+          <circle cx="8" cy="8" r="6"></circle>
+          <path d="M11 5l-4 7"></path>
+        </svg>
+        <div class="fw-bold mt-2">Recipe Discovery</div>
+        <span class="feature-tooltip">Healthy, tasty ideas at every level.</span>
+      </div>
+      <div class="col-md-4 feature-hover text-center py-4" tabindex="0">
+        <svg width="48" height="48" fill="#fd746c" viewBox="0 0 16 16" aria-hidden="true">
+          <rect width="10" height="6" x="3" y="6"></rect>
+          <rect width="6" height="2" x="5" y="12"></rect>
+        </svg>
+        <div class="fw-bold mt-2">Personal Workouts</div>
+        <span class="feature-tooltip">Curated home & gym routines.</span>
+      </div>
+    </div>
+
+    <!-- New Health Info Card -->
+    <div
+      class="card card-custom mt-5 p-4"
+      style="max-width: 720px; margin-left: auto; margin-right: auto;"
+      tabindex="0"
+      aria-label="Health Maintenance and Calorie Intake Information"
+    >
+      <h3 class="mb-3" style="color: #fd746c;">Health Maintenance & Calorie Intake</h3>
+      <p>
+        Maintaining health means balancing <strong>calorie consumption</strong> with
+        energy expenditure. The average adult requires:
+      </p>
+      <ul style="line-height: 1.5;">
+        <li><strong>Women:</strong> ~1,800 to 2,400 kcal/day (depending on activity)</li>
+        <li><strong>Men:</strong> ~2,200 to 3,000 kcal/day (depending on activity)</li>
+      </ul>
+      <p>
+        Tracking your meals helps you stay in control of weight management, fuel your workouts, and maintain overall wellness.
+      </p>
+      <p>
+        Incorporate a variety of nutrient-rich foods <em>(lean proteins,
+        whole grains, fruits, vegetables, healthy fats)</em> and stay hydrated.
+      </p>
+    </div>
+
+    <div class="text-center mt-4">
+      <button class="cta-btn" onclick="switchSection('food')">Start Now</button>
+    </div>
+
+    <div id="designer-credits" tabindex="0" aria-label="Website designed by credits">
+      <p>
+        <em>Web Design Credits:</em><br />
+        <span>Karthik</span>, <span>Tharun</span>, <span>Nithin</span>, and <span>Prajin</span>
+      </p>
+    </div>
+  </div>
+
+  <!-- Food Intake Section -->
+  <div class="container py-5 section" id="food" tabindex="0">
+    <div class="row">
+      <div class="col-md-7">
+        <div class="card card-custom mb-4">
+          <div class="card-header bg-dark text-warning fw-bold">
+            Add Food Item
+          </div>
+          <div class="card-body">
+            <form id="food-form" autocomplete="off" aria-label="Add food intake form">
+              <div class="mb-3">
+                <label for="foodName" class="form-label">Food Name</label>
+                <input
+                  type="text"
+                  id="foodName"
+                  class="form-control"
+                  required
+                  list="food-options"
+                  autocomplete="off"
+                  aria-required="true"
+                  aria-describedby="foodHelp"
+                  placeholder="Type food name here e.g. chicken"
+                />
+                <datalist id="food-options">
+                  <option value="chicken"></option>
+                  <option value="rice"></option>
+                  <option value="egg"></option>
+                  <option value="milk"></option>
+                  <option value="paneer"></option>
+                  <option value="dal"></option>
+                  <option value="banana"></option>
+                  <option value="apple"></option>
+                  <option value="broccoli"></option>
+                  <option value="oats"></option>
+                  <option value="tofu"></option>
+                  <option value="quinoa"></option>
+                  <option value="almonds"></option>
+                </datalist>
+                <div id="foodHelp" class="form-text">
+                  Choose a food from the list or type a supported food name.
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="grams" class="form-label">Quantity (grams)</label>
+                <input
+                  type="number"
+                  id="grams"
+                  class="form-control"
+                  required
+                  min="1"
+                  aria-required="true"
+                  placeholder="Enter quantity in grams"
+                />
+              </div>
+              <button type="submit" class="btn btn-success">
+                Add
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div class="pt-2 ps-1">
+          <span class="fw-bold">Try these sample daily intakes:</span>
+
+          <div class="intake-plan mb-1" tabindex="0" aria-label="Balanced Vegetarian sample intake">
+            Balanced Vegetarian (hover)
+            <span class="tooltip-inner-div" role="tooltip" aria-hidden="true">
+              Breakfast: Oats+milk+banana<br />
+              Lunch: Dal, rice, broccoli, paneer<br />
+              Dinner: Quinoa, tofu stir-fry, apple.<br />
+              ~1700kcal, 60g protein
+            </span>
+          </div>
+          <div class="intake-plan mb-1" tabindex="0" aria-label="High Protein Non-Veg sample intake">
+            High Protein Non-Veg (hover)
+            <span class="tooltip-inner-div" role="tooltip" aria-hidden="true">
+              Breakfast: Eggs+almonds<br />
+              Lunch: Chicken breast, rice, broccoli<br />
+              Dinner: Paneer, dal, salad.<br />
+              ~2000kcal, 110g protein
+            </span>
+          </div>
+          <div class="intake-plan mb-1" tabindex="0" aria-label="Quick & Light sample intake">
+            Quick & Light (hover)
+            <span class="tooltip-inner-div" role="tooltip" aria-hidden="true">
+              Breakfast: Apple+milk<br />
+              Lunch: Dal+rice, stir-fry vegetables<br />
+              Dinner: Tofu, banana.<br />
+              ~1300kcal, 45g protein
+            </span>
+          </div>
+        </div>
+
+        <div class="pt-4">
+          <span class="small-text">Most common foods:</span>
+          <div class="d-flex flex-wrap" aria-label="Most common foods tags">
+            <span class="badge bg-secondary m-1">chicken</span>
+            <span class="badge bg-secondary m-1">rice</span>
+            <span class="badge bg-secondary m-1">paneer</span>
+            <span class="badge bg-secondary m-1">dal</span>
+            <span class="badge bg-secondary m-1">broccoli</span>
+            <span class="badge bg-secondary m-1">oats</span>
+            <span class="badge bg-secondary m-1">tofu</span>
+            <span class="badge bg-secondary m-1">apple</span>
+            <span class="badge bg-secondary m-1">banana</span>
+            <span class="badge bg-secondary m-1">egg</span>
+            <span class="badge bg-secondary m-1">milk</span>
+            <span class="badge bg-secondary m-1">almonds</span>
+            <span class="badge bg-secondary m-1">quinoa</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-5">
+        <div class="card card-custom mb-3">
+          <div class="card-header bg-dark text-success fw-bold">Today's Food Summary</div>
+          <div class="card-body">
+            <ul id="food-list" class="list-group mb-3" aria-live="polite" aria-label="Food list"></ul>
+            <div class="alert alert-info bg-dark text-info fw-semibold">
+              <strong>Total Calories:</strong> <span id="totalCalories">0</span> kcal<br />
+              <strong>Total Protein:</strong> <span id="totalProtein">0</span> g
+            </div>
+          </div>
+        </div>
+        <div class="small-text px-3">
+          Track and tweak your intake instantly. More foods coming soon!
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recipes Section -->
+  <div class="container py-5 section" id="recipes" tabindex="0">
+    <div class="card card-custom">
+      <div class="card-body">
+        <h2 class="mb-3" style="color:#fd746c;">Healthy Recipes</h2>
+        <p>Browse these quick, delicious recipes (hover to see ingredients!):</p>
+        <div class="recipe-idea" tabindex="0" aria-label="Veggie Protein Bowl recipe">
+          Veggie Protein Bowl
+          <span class="tooltip-inner-div" role="tooltip" aria-hidden="true">
+            Ingredients: Cooked quinoa, sautéed broccoli & spinach, grilled tofu, lemon vinaigrette.<br />
+            ~400kcal, 20g protein per bowl.
+          </span>
+        </div>
+        <div class="recipe-idea" tabindex="0" aria-label="Egg & Almond Oatmeal recipe">
+          Egg & Almond Oatmeal
+          <span class="tooltip-inner-div" role="tooltip" aria-hidden="true">
+            Ingredients: Rolled oats, skim milk, chopped boiled egg, almonds, pinch cinnamon.<br />
+            ~350kcal, 17g protein per bowl.
+          </span>
+        </div>
+        <div class="recipe-idea" tabindex="0" aria-label="Paneer Stir-Fry Wrap recipe">
+          Paneer Stir-Fry Wrap
+          <span class="tooltip-inner-div" role="tooltip" aria-hidden="true">
+            Ingredients: Paneer strips sautéed with capsicum, onions, peas, wrapped in whole wheat roti.<br />
+            ~350kcal, 18g protein per wrap.
+          </span>
+        </div>
+        <div class="recipe-idea" tabindex="0" aria-label="Banana Nut Yogurt Bowl recipe">
+          Banana Nut Yogurt Bowl
+          <span class="tooltip-inner-div" role="tooltip" aria-hidden="true">
+            Ingredients: Low-fat yogurt, sliced banana, chopped almonds, drizzle honey.<br />
+            ~220kcal, 8g protein per serving.
+          </span>
+        </div>
+        <!-- Additional Recipes -->
+        <div class="recipe-idea" tabindex="0" aria-label="Grilled Chicken Salad recipe">
+          Grilled Chicken Salad
+          <span class="tooltip-inner-div" role="tooltip" aria-hidden="true">
+            Ingredients: Grilled chicken breast, mixed greens, cherry tomatoes, olive oil dressing.<br />
+            ~420kcal, 35g protein per serving.
+          </span>
+        </div>
+        <div class="recipe-idea" tabindex="0" aria-label="Quinoa & Black Bean Bowl recipe">
+          Quinoa & Black Bean Bowl
+          <span class="tooltip-inner-div" role="tooltip" aria-hidden="true">
+            Ingredients: Quinoa, black beans, corn, avocado, lime dressing.<br />
+            ~450kcal, 18g protein per bowl.
+          </span>
+        </div>
+        <div class="recipe-idea" tabindex="0" aria-label="Scrambled Tofu recipe">
+          Scrambled Tofu
+          <span class="tooltip-inner-div" role="tooltip" aria-hidden="true">
+            Ingredients: Tofu, turmeric, spinach, bell peppers, olive oil.<br />
+            ~320kcal, 22g protein per serving.
+          </span>
+        </div>
+        <div class="mt-3 small-text">
+          New healthy recipes across cuisines added regularly! Want to submit your favorite? Email us!
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Workouts Section -->
+  <div class="container py-5 section" id="workouts" tabindex="0">
+    <div class="card card-custom">
+      <div class="card-body">
+        <h2 class="mb-2" style="color: #fd746c;">Workout Plans</h2>
+        <div class="mb-1 workout-plan" tabindex="0" aria-label="Beginner Home Plan workout">
+          Beginner Home Plan (hover)
+          <span class="tooltip-inner-div" role="tooltip" aria-hidden="true">
+            - Warmup: 5min jog in place<br />
+            - 3x10 bodyweight squats<br />
+            - 3x8 knee pushups<br />
+            - 3x30s plank<br />
+            - 2x12 lunges (per leg)<br />
+            <strong>Frequency:</strong> 3/week
+          </span>
+        </div>
+        <div class="mb-1 workout-plan" tabindex="0" aria-label="Intermediate Gym Power workout">
+          Intermediate Gym Power (hover)
+          <span class="tooltip-inner-div" role="tooltip" aria-hidden="true">
+            - 4x10 barbell squats<br />
+            - 3x8 pull-ups<br />
+            - 4x12 dumbbell rows<br />
+            - 3x10 bench press<br />
+            - 3x15 crunches<br />
+            <strong>Frequency:</strong> 4/week
+          </span>
+        </div>
+        <div class="mb-1 workout-plan" tabindex="0" aria-label="Quick Cardio Blast workout">
+          Quick Cardio Blast (hover)
+          <span class="tooltip-inner-div" role="tooltip" aria-hidden="true">
+            - 10min brisk walk/jog<br />
+            - 6x30s jumping jacks<br />
+            - 6x20m shuttle sprints<br />
+            - 3x1min mountain climbers<br />
+            <strong>Frequency:</strong> 2/week
+          </span>
+        </div>
+        <!-- Additional Workouts -->
+        <div class="workout-plan" tabindex="0" aria-label="Yoga Flexibility Flow workout">
+          Yoga Flexibility Flow (hover)
+          <span class="tooltip-inner-div" role="tooltip" aria-hidden="true">
+            - 30min yoga session<br />
+            - Cat-Cow poses, Downward Dog, Child's Pose, Seated Forward Bend<br />
+            <strong>Frequency:</strong> 3/week
+          </span>
+        </div>
+        <div class="workout-plan" tabindex="0" aria-label="HIIT Quick Burn workout">
+          HIIT Quick Burn (hover)
+          <span class="tooltip-inner-div" role="tooltip" aria-hidden="true">
+            - 30s high knees<br />
+            - 30s rest<br />
+            - 30s burpees<br />
+            - 30s rest<br />
+            - 30s jump squats<br />
+            - Repeat 3 rounds<br />
+            <strong>Frequency:</strong> 3/week
+          </span>
+        </div>
+        <div class="workout-plan" tabindex="0" aria-label="Core Strength Builder workout">
+          Core Strength Builder (hover)
+          <span class="tooltip-inner-div" role="tooltip" aria-hidden="true">
+            - 3x15 crunches<br />
+            - 3x20 bicycle crunches<br />
+            - 3x30s plank<br />
+            - 3x15 leg raises<br />
+            <strong>Frequency:</strong> 3/week
+          </span>
+        </div>
+        <div class="mt-3 small-text">
+          Mix up routines for best results. Be sure to warm up & stretch. Ask a trainer for modifications if needed.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Wrap in DOMContentLoaded to avoid errors if DOM is not ready
+    document.addEventListener('DOMContentLoaded', () => {
+      const foodData = {
+        chicken: { calories: 165, protein: 31 },
+        rice: { calories: 130, protein: 2.7 },
+        egg: { calories: 155, protein: 13 },
+        milk: { calories: 42, protein: 3.4 },
+        paneer: { calories: 265, protein: 18 },
+        dal: { calories: 116, protein: 9 },
+        banana: { calories: 89, protein: 1.1 },
+        apple: { calories: 52, protein: 0.3 },
+        broccoli: { calories: 34, protein: 2.8 },
+        oats: { calories: 389, protein: 16.9 },
+        tofu: { calories: 76, protein: 8.1 },
+        quinoa: { calories: 120, protein: 4.1 },
+        almonds: { calories: 579, protein: 21.2 }
+      };
+
+      const foodForm = document.getElementById("food-form");
+      const foodList = document.getElementById("food-list");
+      const totalCalories = document.getElementById("totalCalories");
+      const totalProtein = document.getElementById("totalProtein");
+
+      let totalCal = 0;
+      let totalProt = 0;
+
+      if (foodForm && foodList && totalCalories && totalProtein) {
+        foodForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+          const nameInput = document.getElementById("foodName");
+          const gramsInput = document.getElementById("grams");
+
+          if (!nameInput || !gramsInput) return;
+
+          const name = nameInput.value.toLowerCase().trim();
+          const grams = parseFloat(gramsInput.value);
+
+          if (foodData[name]) {
+            const cal = (foodData[name].calories * grams) / 100;
+            const prot = (foodData[name].protein * grams) / 100;
+
+            totalCal += cal;
+            totalProt += prot;
+
+            const li = document.createElement("li");
+            li.classList.add("list-group-item");
+            li.textContent = `${grams}g ${name} - ${cal.toFixed(1)} kcal, ${prot.toFixed(1)}g protein`;
+            foodList.appendChild(li);
+
+            totalCalories.textContent = totalCal.toFixed(1);
+            totalProtein.textContent = totalProt.toFixed(1);
+
+            foodForm.reset();
+          } else {
+            alert("Food item not found in database.");
+          }
+        });
+      }
+
+      window.switchSection = function (sectionId) {
+        document.querySelectorAll(".section").forEach((sec) =>
+          sec.classList.remove("active-section")
+        );
+        const section = document.getElementById(sectionId);
+        if (section) section.classList.add("active-section");
+
+        document.querySelectorAll(".nav-link").forEach((link) =>
+          link.classList.remove("active")
+        );
+        let item;
+        document.querySelectorAll(".nav-link").forEach((el) => {
+          if (
+            el.textContent
+              .trim()
+              .toLowerCase()
+              .replace(/\s+/g, "") === sectionId.toLowerCase()
+          ) {
+            item = el;
+          }
+        });
+        if (item) item.classList.add("active");
+      };
+    });
+  </script>
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+    defer
+  ></script>
+</body>
+</html>
